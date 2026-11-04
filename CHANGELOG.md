@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- The local CLI and MCP minter accept `--ante-credential oauth:openai` or `oauth:openai/account` to use an existing Ante-managed OpenAI subscription login without an OpenAI API key. Ante's local server selects the account and owns token refresh; the minter, Guardian and outcome reviewer retain their existing models. See [Ante authentication](docs/ante-auth.md).
+
 ### Breaking changes
 
 - A sign-in submit that the site's own control for it covers is clicked through that control. Some sites lay a control with the submit's own name over their real submit, inside the sign-in form, and only a pointer click on that control signs in. The host's click came back `blocked`, and its keyboard press of the covered submit on a click again did nothing, so the sign-in stopped.

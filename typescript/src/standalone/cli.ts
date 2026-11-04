@@ -11,6 +11,7 @@ import type { LocalMintOutcome, PomeradoOptions } from "./contracts.js";
 import type { JobBuildBlocked, MintStopReason } from "../mint/contracts.js";
 import { RunOutcomeFailure } from "./run-report.js";
 import { makeTerminalAsker } from "../inputs/terminal.js";
+import { anteOptions } from "./ante-options.js";
 
 const usage = `Pomerado
 
@@ -22,8 +23,9 @@ Options
   --headed                Show locally launched Chromium
   --effect read|write|ask  Mint authority (default ask)
   --timeout-seconds N      Session budget (default 1200)
+  --ante-credential REF    Use Ante's OpenAI subscription login (oauth:openai[/account])
 
-Set OPENAI_API_KEY before minting. A run makes no model request and needs no key.
+Mint with OPENAI_API_KEY or --ante-credential. A run makes no model request and needs no key.
 A run ignores --intent and --effect. Questions are asked in this terminal.
 `;
 
@@ -56,6 +58,7 @@ const readOptions = (args: readonly string[]) =>
           headed: { type: "boolean" },
           effect: { type: "string" },
           "timeout-seconds": { type: "string" },
+          "ante-credential": { type: "string" },
         },
       }),
     );
@@ -195,6 +198,7 @@ const runCli = (
       const { values, command, timeoutMs, request } = options;
       const pomerado = yield* createPomerado({
         ...overrides,
+        ...(command === "mint" ? yield* anteOptions(values["ante-credential"]) : {}),
         ask: makeTerminalAsker(),
         timeoutMs,
         browser: {

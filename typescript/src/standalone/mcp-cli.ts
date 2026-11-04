@@ -10,6 +10,7 @@ import { readIntegration } from "./artifact-files.js";
 import { prepareIntegration } from "./mcp-package.js";
 import { makeIntegrationMcp, makePomeradoMcp } from "./mcp-server.js";
 import type { PomeradoOptions } from "./contracts.js";
+import { anteOptions } from "./ante-options.js";
 
 const usage = `Pomerado MCP
 
@@ -19,6 +20,7 @@ const usage = `Pomerado MCP
 Options
   --endpoint URL     Attach to native Playwright
   --headed           Show local Chromium
+  --ante-credential REF  Use Ante's OpenAI subscription login (oauth:openai[/account])
 
 The mint root defaults to ./integrations. Supply model credentials in the environment to
 mint. Serving makes no model request and needs no model credentials.
@@ -59,6 +61,7 @@ export const runMcpCli = (
               artifact: { type: "string" },
               endpoint: { type: "string" },
               headed: { type: "boolean" },
+              "ante-credential": { type: "string" },
             },
           }),
         catch: localError,
@@ -72,6 +75,7 @@ export const runMcpCli = (
         return yield* Effect.fail(new Error("Choose mint or serve. See --help."));
       const pomerado = {
         ...options,
+        ...(mode === "mint" ? yield* anteOptions(values["ante-credential"]) : {}),
         browser: {
           ...options.browser,
           ...(values.headed === undefined ? {} : { headless: !values.headed }),

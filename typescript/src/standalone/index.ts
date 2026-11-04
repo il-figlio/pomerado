@@ -28,3 +28,4 @@ export type {
 } from "../runtime/run-outcome.js";
 export { prepareIntegration } from "./mcp-package.js";
 export { runMcpCli, startMcpCli } from "./mcp-cli.js";
+export { makeAnteProvider } from "../models/ante-provider.js";
